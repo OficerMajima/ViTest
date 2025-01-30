@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 using ViTest.Forms;
 using ViTest.Domain;
+using Microsoft.Data.SqlClient;
 
 namespace ViTest
 {
@@ -20,6 +21,7 @@ namespace ViTest
         {
             InitializeComponent();
             InitializeDbContext();
+            CheckDbConnection();
         }
 
         private void InitializeDbContext()
@@ -30,6 +32,28 @@ namespace ViTest
             optionsBuilder.UseSqlServer(connectionString);
 
             _viTestDbContext = new ViTestDbContext(optionsBuilder.Options);
+        }
+
+        private bool CheckDbConnection()
+        {
+            try
+            {
+                using (var connection = new SqlConnection(_viTestDbContext.Database.GetDbConnection().ConnectionString))
+                {
+                    connection.Open();
+                    return true;
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Ошибка подключения к базе данных:\n" + ex.Message, "Ошибка");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Произошла ошибка:\n" + ex.Message, "Ошибка");
+                return false;
+            }
         }
 
         private void LoadOrderPage()
@@ -98,16 +122,19 @@ namespace ViTest
 
         private void orderButton_Click(object sender, EventArgs e)
         {
+            if (!CheckDbConnection()) { return; }
             LoadOrderPage();
         }
 
         private void arrivalButton_Click(object sender, EventArgs e)
         {
+            if (!CheckDbConnection()) { return; }
             LoadArrivalPage();
         }
 
         private void paymentsButton_Click(object sender, EventArgs e)
         {
+            if (!CheckDbConnection()) { return; }
             LoadPaymentsPage();
         }
 
@@ -156,6 +183,8 @@ namespace ViTest
 
         private void addOrderButton_Click(object sender, EventArgs e)
         {
+            if (!CheckDbConnection()) { return; }
+
             AddOrderForm orderForm = new AddOrderForm(_viTestDbContext);
             orderForm.ShowDialog();
             LoadOrderPage();
@@ -163,6 +192,8 @@ namespace ViTest
 
         private void addArrivalButton_Click(object sender, EventArgs e)
         {
+            if (!CheckDbConnection()) { return; }
+
             AddArrivalForm arrivalForm = new AddArrivalForm(_viTestDbContext);
             arrivalForm.ShowDialog();
             LoadArrivalPage();
