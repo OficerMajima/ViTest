@@ -19,6 +19,7 @@ namespace ViTest
         public MainForm()
         {
             InitializeComponent();
+            InitializeDbContext();
         }
 
         private void InitializeDbContext()
@@ -117,8 +118,9 @@ namespace ViTest
                 MessageBox.Show("Выберите заказ", "Заказ не выбран");
                 return;
             }
+
             var selectedOrderId = int.Parse(mainDataGridView.SelectedRows[0].Cells[0].Value.ToString());
-            _currentOrder = _orderList.FirstOrDefault(o => o.OrderId == selectedOrderId);
+            _currentOrder = _orderList.First(o => o.OrderId == selectedOrderId);
 
             if (_currentOrder.AmountPaid >= _currentOrder.TotalAmount)
             {
@@ -137,8 +139,9 @@ namespace ViTest
                 MessageBox.Show("Выберите приход", "Приход не выбран");
                 return;
             }
+
             var selectedMoneyArrivalId = int.Parse(mainDataGridView.SelectedRows[0].Cells[0].Value.ToString());
-            _currentArrival = _arrivalList.FirstOrDefault(m => m.ArrivalId == selectedMoneyArrivalId);
+            _currentArrival = _arrivalList.First(m => m.ArrivalId == selectedMoneyArrivalId);
 
             if (_currentArrival.RemainingAmount <= 0)
             {
@@ -149,6 +152,20 @@ namespace ViTest
             PayForm payForm = new PayForm(_currentOrder, _currentArrival, _viTestDbContext);
             payForm.ShowDialog();
             LoadOrderPage();
+        }
+
+        private void addOrderButton_Click(object sender, EventArgs e)
+        {
+            AddOrderForm orderForm = new AddOrderForm(_viTestDbContext);
+            orderForm.ShowDialog();
+            LoadOrderPage();
+        }
+
+        private void addArrivalButton_Click(object sender, EventArgs e)
+        {
+            AddArrivalForm arrivalForm = new AddArrivalForm(_viTestDbContext);
+            arrivalForm.ShowDialog();
+            LoadArrivalPage();
         }
     }
 }

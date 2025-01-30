@@ -31,6 +31,8 @@
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             panel1 = new Panel();
+            addArrivalButton = new Button();
+            addOrderButton = new Button();
             paymentsButton = new Button();
             arrivalButton = new Button();
             label1 = new Label();
@@ -48,6 +50,8 @@
             // panel1
             // 
             panel1.BackColor = Color.FromArgb(41, 39, 40);
+            panel1.Controls.Add(addArrivalButton);
+            panel1.Controls.Add(addOrderButton);
             panel1.Controls.Add(paymentsButton);
             panel1.Controls.Add(arrivalButton);
             panel1.Controls.Add(label1);
@@ -57,6 +61,34 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(150, 782);
             panel1.TabIndex = 5;
+            // 
+            // addArrivalButton
+            // 
+            addArrivalButton.FlatAppearance.BorderSize = 0;
+            addArrivalButton.FlatStyle = FlatStyle.Flat;
+            addArrivalButton.Font = new Font("Segoe UI Semibold", 15.2F, FontStyle.Bold);
+            addArrivalButton.ForeColor = SystemColors.AppWorkspace;
+            addArrivalButton.Location = new Point(3, 612);
+            addArrivalButton.Name = "addArrivalButton";
+            addArrivalButton.Size = new Size(144, 80);
+            addArrivalButton.TabIndex = 10;
+            addArrivalButton.Text = "Добавить\r\nприход";
+            addArrivalButton.UseVisualStyleBackColor = true;
+            addArrivalButton.Click += addArrivalButton_Click;
+            // 
+            // addOrderButton
+            // 
+            addOrderButton.FlatAppearance.BorderSize = 0;
+            addOrderButton.FlatStyle = FlatStyle.Flat;
+            addOrderButton.Font = new Font("Segoe UI Semibold", 15.2F, FontStyle.Bold);
+            addOrderButton.ForeColor = SystemColors.AppWorkspace;
+            addOrderButton.Location = new Point(3, 698);
+            addOrderButton.Name = "addOrderButton";
+            addOrderButton.Size = new Size(144, 81);
+            addOrderButton.TabIndex = 9;
+            addOrderButton.Text = "Добавить\r\nзаказ";
+            addOrderButton.UseVisualStyleBackColor = true;
+            addOrderButton.Click += addOrderButton_Click;
             // 
             // paymentsButton
             // 
@@ -243,5 +275,7 @@
         private Button confirmOrderButton;
         private DataGridView mainDataGridView;
         private Button confirmArrivalButton;
+        private Button addArrivalButton;
+        private Button addOrderButton;
     }
 }

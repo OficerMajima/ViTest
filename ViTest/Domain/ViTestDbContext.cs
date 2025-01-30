@@ -20,7 +20,19 @@ namespace ViTest.Domain
 
             modelBuilder.Entity<Payment>(entity =>
             {
+                entity.HasKey(e => e.PaymentId);
+                entity.Property(o => o.PaymentId).ValueGeneratedOnAdd();
                 entity.ToTable("Payments", tb => tb.HasTrigger("trg_UpdateOrderAndMoneyArrival"));
+            });
+
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.HasKey(e => e.OrderId);
+            });
+
+            modelBuilder.Entity<MoneyArrival>(entity =>
+            {
+                entity.HasKey(e => e.ArrivalId);
             });
         }
     }

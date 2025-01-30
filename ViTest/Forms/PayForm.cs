@@ -1,17 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using ViTest.Domain;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ViTest.Forms
 {
     public partial class PayForm : Form
     {
-        private ViTestDbContext _context;
+        private ViTestDbContext _viTestDbContext;
         private Order _order;
         private MoneyArrival _moneyArrival;
         public PayForm(Order order, MoneyArrival moneyArrival, ViTestDbContext context)
         {
             InitializeComponent();
-            _context = context;
+            _viTestDbContext = context;
             _order = order;
             _moneyArrival = moneyArrival;
             arrivalOrderLabel.Text = $"Баланс в Вашем приходе №{moneyArrival.ArrivalId}: \r\nсодержит: {moneyArrival.RemainingAmount}." +
@@ -21,8 +23,8 @@ namespace ViTest.Forms
 
         private async void payButton_Click(object sender, EventArgs e)
         {
-            var orderCheck = await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == _order.OrderId);
-            var moneyArrivalCheck = await _context.MoneyArrivals.FirstOrDefaultAsync(m => m.ArrivalId == _moneyArrival.ArrivalId);
+            var orderCheck = await _viTestDbContext.Orders.FirstOrDefaultAsync(o => o.OrderId == _order.OrderId);
+            var moneyArrivalCheck = await _viTestDbContext.MoneyArrivals.FirstOrDefaultAsync(m => m.ArrivalId == _moneyArrival.ArrivalId);
 
             if (orderCheck == null || moneyArrivalCheck == null)
             {
@@ -43,22 +45,28 @@ namespace ViTest.Forms
                 return;
             }
 
-            Payment payment = new Payment();
+            var orderParam = new SqlParameter("@OrderId", _order.OrderId);
+            var arrivalParam = new SqlParameter("@ArrivalId", _moneyArrival.ArrivalId);
+            var payParam = new SqlParameter("@PaymentAmount", payNumBox.Value);
 
-            payment.OrderId = _order.OrderId;
-            payment.ArrivalId = _moneyArrival.ArrivalId;
-            payment.PaymentAmount = payNumBox.Value;
-
-            await _context.Payments.AddAsync(payment);
             try
             {
-                await _context.SaveChangesAsync();
+                await _viTestDbContext.Database.ExecuteSqlRawAsync("EXEC AddPayment @OrderId, @ArrivalId, @PaymentAmount",
+                orderParam, arrivalParam, payParam);
             }
-            catch (DbUpdateException dbEx)
+            catch (SqlException dbEx)
             {
-                MessageBox.Show("Ошибка при обновлении данных: " + dbEx.InnerException?.Message ?? dbEx.Message, "Ошибка");
+                var errorMessage = "Ошибка при обновлении данных: ";
+                foreach (SqlError error in dbEx.Errors)
+                {
+                    errorMessage += $"{error.Message}\n";
+                }
+                MessageBox.Show(errorMessage, "Ошибка");
             }
-            Close();
+            finally
+            {
+                Close();
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
