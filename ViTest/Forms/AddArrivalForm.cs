@@ -27,6 +27,11 @@ namespace ViTest.Forms
 
         private async void confirmButton_Click(object sender, EventArgs e)
         {
+            if (totalAmountNumBox.Value <=  0)
+            {
+                MessageBox.Show("Приход не может быть равен 0 или быть отрицательным.", "Ошибка");
+                return;
+            }
             if (remainingAmountNumBox.Value > totalAmountNumBox.Value)
             {
                 MessageBox.Show("Остаток в приходе не может превышать общую сумму прихода.", "Ошибка");
@@ -54,6 +59,11 @@ namespace ViTest.Forms
                     errorMessage += $"{error.Message}\n";
                 }
                 MessageBox.Show(errorMessage, "Ошибка");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Произошла ошибка:\n" + ex.Message, "Ошибка");
+                return;
             }
             finally
             {

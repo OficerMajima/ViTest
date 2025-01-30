@@ -21,7 +21,6 @@ namespace ViTest
         {
             InitializeComponent();
             InitializeDbContext();
-            CheckDbConnection();
         }
 
         private void InitializeDbContext()
@@ -34,32 +33,19 @@ namespace ViTest
             _viTestDbContext = new ViTestDbContext(optionsBuilder.Options);
         }
 
-        private bool CheckDbConnection()
-        {
-            try
-            {
-                using (var connection = new SqlConnection(_viTestDbContext.Database.GetDbConnection().ConnectionString))
-                {
-                    connection.Open();
-                    return true;
-                }
-            }
-            catch (SqlException ex)
-            {
-                MessageBox.Show("Ошибка при подключении к базе данных:\n" + ex.Message, "Ошибка");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Произошла ошибка:\n" + ex.Message, "Ошибка");
-                return false;
-            }
-        }
-
         private void LoadOrderPage()
         {
             InitializeDbContext();
-            _orderList = _viTestDbContext.Orders.ToList();
+            try
+            {
+                _orderList = _viTestDbContext.Orders.ToList();
+            }
+            catch (SqlException dbEx)
+            {
+                MessageBox.Show("Произошла ошибка:\n" + dbEx.Message, "Ошибка");
+                return;
+            }
+
             mainDataGridView.DataSource = _orderList;
 
             mainDataGridView.Columns["OrderId"].HeaderText = "Номер";
@@ -77,7 +63,16 @@ namespace ViTest
         private void LoadArrivalPage()
         {
             InitializeDbContext();
-            _arrivalList = _viTestDbContext.MoneyArrivals.ToList();
+            try
+            {
+                _arrivalList = _viTestDbContext.MoneyArrivals.ToList();
+            }
+            catch (SqlException dbEx)
+            {
+                MessageBox.Show("Произошла ошибка:\n" + dbEx.Message, "Ошибка");
+                return;
+            }
+            
             mainDataGridView.DataSource = _arrivalList;
 
             mainDataGridView.Columns["ArrivalId"].HeaderText = "Номер";
@@ -99,7 +94,16 @@ namespace ViTest
         private void LoadPaymentsPage()
         {
             InitializeDbContext();
-            _paymentList = _viTestDbContext.Payments.ToList();
+            try
+            {
+                _paymentList = _viTestDbContext.Payments.ToList();
+            }
+            catch (SqlException dbEx)
+            {
+                MessageBox.Show("Произошла ошибка:\n" + dbEx.Message, "Ошибка");
+                return;
+            }
+
             mainDataGridView.DataSource = _paymentList;
 
             mainDataGridView.Columns["PaymentId"].HeaderText = "Номер";
@@ -122,19 +126,16 @@ namespace ViTest
 
         private void orderButton_Click(object sender, EventArgs e)
         {
-            if (!CheckDbConnection()) { return; }
             LoadOrderPage();
         }
 
         private void arrivalButton_Click(object sender, EventArgs e)
         {
-            if (!CheckDbConnection()) { return; }
             LoadArrivalPage();
         }
 
         private void paymentsButton_Click(object sender, EventArgs e)
         {
-            if (!CheckDbConnection()) { return; }
             LoadPaymentsPage();
         }
 
@@ -183,8 +184,6 @@ namespace ViTest
 
         private void addOrderButton_Click(object sender, EventArgs e)
         {
-            if (!CheckDbConnection()) { return; }
-
             AddOrderForm orderForm = new AddOrderForm(_viTestDbContext);
             orderForm.ShowDialog();
             LoadOrderPage();
@@ -192,8 +191,6 @@ namespace ViTest
 
         private void addArrivalButton_Click(object sender, EventArgs e)
         {
-            if (!CheckDbConnection()) { return; }
-
             AddArrivalForm arrivalForm = new AddArrivalForm(_viTestDbContext);
             arrivalForm.ShowDialog();
             LoadArrivalPage();

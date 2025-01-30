@@ -17,6 +17,11 @@ namespace ViTest.Forms
 
         private async void confirmButton_Click(object sender, EventArgs e)
         {
+            if (totalAmountNumBox.Value <= 0)
+            {
+                MessageBox.Show("Сумма заказа не может быть равна 0 или быть отрицательной.", "Ошибка");
+                return;
+            }
             if (totalAmountNumBox.Value < amountPaidNumBox.Value)
             {
                 MessageBox.Show("Выплаченная сумма не может превышать общую сумму заказа.", "Ошибка");
@@ -40,6 +45,11 @@ namespace ViTest.Forms
                     errorMessage += $"{error.Message}\n";
                 }
                 MessageBox.Show(errorMessage, "Ошибка");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Произошла ошибка:\n" + ex.Message, "Ошибка");
+                return;
             }
             finally
             {
