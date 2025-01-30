@@ -46,7 +46,7 @@ namespace ViTest
             }
             catch (SqlException ex)
             {
-                MessageBox.Show("Ошибка подключения к базе данных:\n" + ex.Message, "Ошибка");
+                MessageBox.Show("Ошибка при подключении к базе данных:\n" + ex.Message, "Ошибка");
                 return false;
             }
             catch (Exception ex)
